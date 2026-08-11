@@ -1,0 +1,28 @@
+---
+import { t } from '../i18n/ui';
+
+const lang = Astro.currentLocale;
+const dict = t(lang).timeControlsPage;
+---
+
+<section id="time-controls" class="mx-auto max-w-6xl px-6 py-10 scroll-mt-20">
+	<div class="text-center">
+		<h2 class="text-display-sm text-ink sm:text-display-md">{dict.title}</h2>
+		<p class="mx-auto mt-2 max-w-2xl text-body-md text-body">{dict.subtitle}</p>
+	</div>
+
+	<div class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+		{dict.items.map((control) => (
+			<div class="rounded-lg border border-hairline bg-canvas p-6 card-shadow">
+				<h3 class="text-display-sm text-ink">{control.name}</h3>
+				<p class="mt-1 text-caption text-mute">{control.time}</p>
+				<p class="mt-3 text-body-sm text-body">{control.description}</p>
+				<div class="mt-3 flex flex-wrap gap-1">
+					{control.examples.map((example) => (
+						<span class="rounded-full bg-canvas-soft-2 px-2 py-1 text-caption-mono text-body">{example}</span>
+					))}
+				</div>
+			</div>
+		))}
+	</div>
+</section>

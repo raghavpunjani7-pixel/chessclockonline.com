@@ -1,0 +1,34 @@
+---
+import { t } from '../i18n/ui';
+import { localizedPath } from '../i18n/utils';
+
+const lang = Astro.currentLocale;
+const dict = t(lang).hero;
+---
+
+<section class="relative overflow-hidden">
+	<div class="bg-mesh-gradient pointer-events-none absolute inset-x-0 top-0 h-[560px] opacity-70" aria-hidden="true"></div>
+
+	<div class="relative mx-auto max-w-4xl px-6 pb-10 pt-16 text-center">
+		<span class="mx-auto inline-flex items-center gap-1 whitespace-nowrap rounded-full border border-hairline bg-canvas px-3 py-1 text-caption text-body card-shadow">
+			{dict.badge}
+		</span>
+
+		<h1 class="mt-6 text-display-md text-ink sm:text-display-lg lg:text-display-xl">
+			{dict.title}
+		</h1>
+
+		<p class="mx-auto mt-3 max-w-2xl text-body-md text-body sm:text-body-lg">
+			{dict.subtitle}
+		</p>
+
+		<div class="mt-6 flex flex-wrap items-center justify-center gap-2">
+			<a href="#clock" class="rounded-pill bg-primary px-4 py-2 text-button-lg text-on-primary transition-opacity hover:opacity-90">
+				{dict.ctaPrimary}
+			</a>
+			<a href={localizedPath(lang, '/time-controls/')} class="rounded-pill border border-hairline bg-canvas px-4 py-2 text-button-lg text-ink transition-colors hover:border-hairline-strong">
+				{dict.ctaSecondary}
+			</a>
+		</div>
+	</div>
+</section>

@@ -1,0 +1,37 @@
+---
+---
+
+<button
+	type="button"
+	data-theme-toggle
+	aria-label="Toggle color theme"
+	class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-hairline text-ink transition-colors hover:bg-canvas-soft-2"
+>
+	<svg data-icon-sun class="block dark:hidden" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+		<circle cx="12" cy="12" r="4" />
+		<path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" stroke-linecap="round" />
+	</svg>
+	<svg data-icon-moon class="hidden dark:block" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+		<path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5Z" stroke-linecap="round" stroke-linejoin="round" />
+	</svg>
+</button>
+
+<script>
+	const STORAGE_KEY = "chessclockonline:theme";
+
+	function applyTheme(theme: "light" | "dark"): void {
+		document.documentElement.classList.toggle("dark", theme === "dark");
+	}
+
+	for (const toggle of document.querySelectorAll<HTMLButtonElement>("[data-theme-toggle]")) {
+		toggle.addEventListener("click", () => {
+			const next: "light" | "dark" = document.documentElement.classList.contains("dark") ? "light" : "dark";
+			applyTheme(next);
+			try {
+				localStorage.setItem(STORAGE_KEY, next);
+			} catch {
+				// ignore storage failures (private browsing, quota, etc.)
+			}
+		});
+	}
+</script>

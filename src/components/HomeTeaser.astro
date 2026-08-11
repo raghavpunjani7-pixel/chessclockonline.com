@@ -1,0 +1,31 @@
+---
+import { t } from '../i18n/ui';
+import { localizedPath } from '../i18n/utils';
+
+const lang = Astro.currentLocale;
+const dict = t(lang).homeTeaser;
+---
+
+<section id="features" class="bg-canvas-soft-2 py-10">
+	<div class="mx-auto max-w-6xl px-6">
+		<div class="text-center">
+			<h2 class="text-display-sm text-ink sm:text-display-md">{dict.title}</h2>
+			<p class="mx-auto mt-2 max-w-2xl text-body-md text-body">{dict.subtitle}</p>
+		</div>
+
+		<div class="mt-8 grid gap-4 sm:grid-cols-3">
+			{dict.items.map((feature) => (
+				<div class="rounded-lg border border-hairline bg-canvas p-6 card-shadow">
+					<h3 class="text-body-md-strong text-ink">{feature.title}</h3>
+					<p class="mt-1 text-body-sm text-body">{feature.body}</p>
+				</div>
+			))}
+		</div>
+
+		<div class="mt-8 text-center">
+			<a href={localizedPath(lang, '/features/')} class="text-body-sm-strong text-link hover:text-link-deep">
+				{dict.ctaMore} →
+			</a>
+		</div>
+	</div>
+</section>

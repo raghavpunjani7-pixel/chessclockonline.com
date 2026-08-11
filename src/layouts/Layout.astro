@@ -1,23 +1,90 @@
+---
+import '../styles/global.css';
+import SiteHeader from '../components/SiteHeader.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import { t, defaultLocale, locales, type Locale } from '../i18n/ui';
+
+interface Props {
+	page?: 'home' | 'clock' | 'timeControls' | 'features' | 'faq';
+}
+
+const { page = 'home' } = Astro.props;
+
+const lang = (Astro.currentLocale ?? defaultLocale) as Locale;
+const dict = t(lang);
+
+const titles: Record<NonNullable<Props['page']>, string> = {
+	home: dict.meta.title,
+	clock: dict.clockPage.metaTitle,
+	timeControls: dict.timeControlsPage.metaTitle,
+	features: dict.featuresPage.metaTitle,
+	faq: dict.faqPage.metaTitle,
+};
+const descriptions: Record<NonNullable<Props['page']>, string> = {
+	home: dict.meta.description,
+	clock: dict.clockPage.metaDescription,
+	timeControls: dict.timeControlsPage.metaDescription,
+	features: dict.featuresPage.metaDescription,
+	faq: dict.faqPage.metaDescription,
+};
+const title = titles[page];
+const description = descriptions[page];
+
+// Strip the locale prefix (if any) to get the canonical, locale-independent path.
+const pathname = Astro.url.pathname;
+const prefix = lang !== defaultLocale ? `/${lang}` : '';
+const currentPath = prefix && pathname.startsWith(prefix) ? pathname.slice(prefix.length) || '/' : pathname;
+
+const canonicalURL = new URL(pathname, Astro.site);
+---
+
 <!doctype html>
-<html lang="en">
+<html lang={lang}>
 	<head>
 		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
+		<link rel="shortcut icon" href="/favicon.ico" />
+		<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+		<meta name="apple-mobile-web-app-title" content="chess clock" />
+		<link rel="manifest" href="/site.webmanifest" />
 		<meta name="generator" content={Astro.generator} />
-		<title>Astro Basics</title>
+		<link rel="canonical" href={canonicalURL} />
+
+		<title>{title}</title>
+		<meta name="description" content={description} />
+		<meta name="theme-color" content="#171717" />
+
+		{locales.map((locale) => (
+			<link rel="alternate" hreflang={locale} href={new URL(locale === defaultLocale ? currentPath : `/${locale}${currentPath}`, Astro.site)} />
+		))}
+		<link rel="alternate" hreflang="x-default" href={new URL(currentPath, Astro.site)} />
+
+		<meta property="og:type" content="website" />
+		<meta property="og:title" content={title} />
+		<meta property="og:description" content={description} />
+		<meta property="og:url" content={canonicalURL} />
+		<meta name="twitter:card" content="summary_large_image" />
+		<meta name="twitter:title" content={title} />
+		<meta name="twitter:description" content={description} />
+
+		<link rel="preload" href="/fonts/Geist-Variable.woff2" as="font" type="font/woff2" crossorigin />
+		<link rel="preload" href="/fonts/GeistMono-Variable.woff2" as="font" type="font/woff2" crossorigin />
+
+		<script is:inline>
+			(function () {
+				try {
+					var stored = localStorage.getItem("chessclockonline:theme");
+					var theme = stored || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+					if (theme === "dark") document.documentElement.classList.add("dark");
+				} catch (e) {}
+			})();
+		</script>
 	</head>
-	<body>
+	<body class="min-h-screen bg-canvas-soft font-sans text-ink antialiased">
+		<SiteHeader currentPath={currentPath} />
 		<slot />
+		<SiteFooter />
 	</body>
 </html>
-
-<style>
-	html,
-	body {
-		margin: 0;
-		width: 100%;
-		height: 100%;
-	}
-</style>

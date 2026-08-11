@@ -1,0 +1,46 @@
+---
+import { t } from '../i18n/ui';
+
+const lang = Astro.currentLocale;
+const dict = t(lang).featuresPage;
+---
+
+<section id="features" class="bg-canvas-soft-2 py-10">
+	<div class="mx-auto max-w-6xl px-6">
+		<div class="text-center">
+			<h2 class="text-display-sm text-ink sm:text-display-md">{dict.title}</h2>
+			<p class="mx-auto mt-2 max-w-2xl text-body-md text-body">{dict.subtitle}</p>
+		</div>
+
+		<div class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+			{dict.items.map((feature) => (
+				<div class="rounded-lg border border-hairline bg-canvas p-6 card-shadow">
+					<h3 class="text-body-md-strong text-ink">{feature.title}</h3>
+					<p class="mt-1 text-body-sm text-body">{feature.body}</p>
+				</div>
+			))}
+		</div>
+
+		<div id="compare" class="mt-10 overflow-x-auto rounded-lg border border-hairline bg-canvas card-shadow">
+			<table class="w-full min-w-[560px] border-collapse text-left text-body-sm">
+				<caption class="sr-only">{dict.compareTitle}</caption>
+				<thead>
+					<tr class="border-b border-hairline text-caption text-mute">
+						{dict.compareHeaders.map((header) => (
+							<th class="p-4 font-medium">{header}</th>
+						))}
+					</tr>
+				</thead>
+				<tbody>
+					{dict.compareRows.map(([capability, ours, theirs]) => (
+						<tr class="border-b border-hairline last:border-0">
+							<td class="p-4 text-ink">{capability}</td>
+							<td class="p-4 text-ink">{ours}</td>
+							<td class="p-4 text-mute">{theirs}</td>
+						</tr>
+					))}
+				</tbody>
+			</table>
+		</div>
+	</div>
+</section>

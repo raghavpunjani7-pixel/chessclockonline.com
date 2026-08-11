@@ -1,0 +1,197 @@
+---
+import { t } from '../i18n/ui';
+
+const lang = Astro.currentLocale;
+const dict = t(lang).clockPage;
+
+const categories: { id: 'bullet' | 'blitz' | 'rapid' | 'classical' | 'custom'; label: string }[] = [
+	{ id: 'bullet', label: dict.categories.bullet },
+	{ id: 'blitz', label: dict.categories.blitz },
+	{ id: 'rapid', label: dict.categories.rapid },
+	{ id: 'classical', label: dict.categories.classical },
+	{ id: 'custom', label: dict.categories.custom },
+];
+
+const clockI18n = {
+	start: dict.start,
+	pause: dict.pause,
+	resume: dict.resume,
+	soundOn: dict.soundOn,
+	soundOff: dict.soundOff,
+	player1: dict.player1,
+	player2: dict.player2,
+	minSuffix: dict.minSuffix,
+	moveSingular: dict.moveSingular,
+	movePlural: dict.movePlural,
+	categories: dict.categories,
+	announce: dict.announce,
+	resetConfirm: dict.resetConfirm,
+};
+---
+
+<section id="clock" class="mx-auto max-w-4xl px-6 py-10 scroll-mt-20">
+	<div data-chess-clock class="rounded-xl border border-hairline bg-canvas p-4 card-shadow sm:p-6">
+		<script type="application/json" data-clock-i18n set:html={JSON.stringify(clockI18n)} />
+
+		<div class="flex items-center justify-between gap-2">
+			<p class="text-caption text-mute">
+				{dict.nowPlaying} <span data-active-preset-label class="text-body-sm-strong text-ink">{dict.categories.blitz} — 5 | 3</span>
+			</p>
+			<div class="flex items-center gap-1">
+				<button type="button" data-sound-toggle aria-pressed="true" class="rounded-full border border-hairline px-2 py-1 text-caption text-body hover:text-ink">
+					{dict.soundOn}
+				</button>
+				<button type="button" data-rotate aria-pressed="false" title={dict.faceToFace} class="rounded-full border border-hairline px-2 py-1 text-caption text-body hover:text-ink">
+					{dict.faceToFace}
+				</button>
+				<button type="button" data-fullscreen title={dict.fullscreen} class="rounded-full border border-hairline px-2 py-1 text-caption text-body hover:text-ink">
+					{dict.fullscreen}
+				</button>
+			</div>
+		</div>
+
+		<div data-clock-shell class="mt-3 flex flex-col gap-2">
+			<div
+				data-panel="b"
+				data-active="false"
+				data-turn="false"
+				data-low="false"
+				data-critical="false"
+				data-expired="false"
+				role="button"
+				tabindex="0"
+				aria-label={`${dict.player2} — ${dict.tapHint}`}
+				class="group relative flex min-h-[200px] flex-1 cursor-pointer select-none flex-col items-center justify-center gap-1 rounded-lg border border-hairline bg-canvas p-6 text-ink transition-colors duration-150 card-shadow data-[active=true]:border-transparent data-[active=true]:bg-primary data-[active=true]:text-on-primary data-[active=true]:data-[low=true]:bg-warning-deep data-[active=true]:data-[critical=true]:bg-error data-[expired=true]:bg-error data-[expired=true]:text-on-primary sm:min-h-[240px]"
+			>
+				<input
+					data-name="b"
+					type="text"
+					maxlength="20"
+					aria-label={dict.player2}
+					class="w-40 rounded-full bg-transparent text-center text-body-sm-strong outline-none placeholder:text-current"
+					placeholder={dict.player2}
+				/>
+				<span data-time="b" class="tabular-time text-[3.25rem] leading-none sm:text-[4.5rem]">5:00</span>
+				<span data-moves="b" class="text-caption opacity-80">0 {dict.movePlural}</span>
+			</div>
+
+			<div class="flex items-center justify-center gap-2 py-1">
+				<button type="button" data-start-pause class="rounded-pill bg-primary px-6 py-2 text-button-lg text-on-primary transition-opacity hover:opacity-90">
+					{dict.start}
+				</button>
+				<button type="button" data-undo title={dict.undo} class="rounded-full border border-hairline bg-canvas px-3 py-2 text-button-md text-body hover:text-ink">
+					{dict.undo}
+				</button>
+				<button type="button" data-swap title={dict.swap} class="rounded-full border border-hairline bg-canvas px-3 py-2 text-button-md text-body hover:text-ink">
+					{dict.swap}
+				</button>
+				<button type="button" data-reset title={dict.reset} class="rounded-full border border-hairline bg-canvas px-3 py-2 text-button-md text-body hover:text-ink">
+					{dict.reset}
+				</button>
+			</div>
+
+			<div
+				data-panel="a"
+				data-active="false"
+				data-turn="false"
+				data-low="false"
+				data-critical="false"
+				data-expired="false"
+				role="button"
+				tabindex="0"
+				aria-label={`${dict.player1} — ${dict.tapHint}`}
+				class="group relative flex min-h-[200px] flex-1 cursor-pointer select-none flex-col items-center justify-center gap-1 rounded-lg border border-hairline bg-canvas p-6 text-ink transition-colors duration-150 card-shadow data-[active=true]:border-transparent data-[active=true]:bg-primary data-[active=true]:text-on-primary data-[active=true]:data-[low=true]:bg-warning-deep data-[active=true]:data-[critical=true]:bg-error data-[expired=true]:bg-error data-[expired=true]:text-on-primary sm:min-h-[240px]"
+			>
+				<input
+					data-name="a"
+					type="text"
+					maxlength="20"
+					aria-label={dict.player1}
+					class="w-40 rounded-full bg-transparent text-center text-body-sm-strong outline-none placeholder:text-current"
+					placeholder={dict.player1}
+				/>
+				<span data-time="a" class="tabular-time text-[3.25rem] leading-none sm:text-[4.5rem]">5:00</span>
+				<span data-moves="a" class="text-caption opacity-80">0 {dict.movePlural}</span>
+			</div>
+		</div>
+
+		<p class="mt-3 text-center text-caption text-mute">
+			{dict.tapHint}
+		</p>
+
+		<div role="status" aria-live="polite" data-announcer class="sr-only"></div>
+
+		<div class="mt-6 border-t border-hairline pt-6">
+			<div class="flex flex-wrap gap-1" role="tablist" aria-label={dict.categoryTablistLabel}>
+				{categories.map((category, index) => (
+					<button
+						type="button"
+						data-category-tab={category.id}
+						data-active={index === 0 ? 'true' : 'false'}
+						role="tab"
+						class="rounded-full px-3 py-1 text-body-sm text-body transition-colors data-[active=true]:bg-primary data-[active=true]:text-on-primary hover:text-ink"
+					>
+						{category.label}
+					</button>
+				))}
+			</div>
+
+			{categories.filter((c) => c.id !== 'custom').map((category) => (
+				<div data-preset-list={category.id} class="mt-3 flex flex-wrap gap-1"></div>
+			))}
+
+			<div data-custom-form class="mt-3 hidden space-y-3 rounded-lg border border-hairline bg-canvas-soft p-4">
+				<div class="grid gap-3 sm:grid-cols-2">
+					<label class="block text-body-sm text-body">
+						{dict.custom.minutesLabel}
+						<input data-custom-minutes type="number" min="1" max="180" class="mt-1 block w-full rounded-sm border border-hairline bg-canvas px-3 py-2 text-body-md text-ink" />
+					</label>
+					<label class="block text-body-sm text-body">
+						{dict.custom.incrementLabel}
+						<input data-custom-increment type="number" min="0" max="120" class="mt-1 block w-full rounded-sm border border-hairline bg-canvas px-3 py-2 text-body-md text-ink" />
+					</label>
+				</div>
+
+				<label class="block text-body-sm text-body">
+					{dict.custom.methodLabel}
+					<select data-custom-increment-type class="mt-1 block w-full rounded-sm border border-hairline bg-canvas px-3 py-2 text-body-md text-ink">
+						<option value="none">{dict.custom.methodNone}</option>
+						<option value="fischer">{dict.custom.methodFischer}</option>
+						<option value="bronstein">{dict.custom.methodBronstein}</option>
+						<option value="delay">{dict.custom.methodDelay}</option>
+					</select>
+				</label>
+
+				<label class="flex items-center gap-2 text-body-sm text-body">
+					<input data-custom-stage-toggle type="checkbox" class="h-4 w-4 rounded border-hairline" />
+					{dict.custom.stageToggle}
+				</label>
+
+				<div data-custom-stage-fields class="hidden grid gap-3 sm:grid-cols-2">
+					<label class="block text-body-sm text-body">
+						{dict.custom.stageMoves}
+						<input data-custom-stage-moves type="number" min="1" max="80" class="mt-1 block w-full rounded-sm border border-hairline bg-canvas px-3 py-2 text-body-md text-ink" />
+					</label>
+					<label class="block text-body-sm text-body">
+						{dict.custom.stageMinutes}
+						<input data-custom-stage-minutes type="number" min="1" max="180" class="mt-1 block w-full rounded-sm border border-hairline bg-canvas px-3 py-2 text-body-md text-ink" />
+					</label>
+				</div>
+
+				<button type="button" data-apply-custom class="rounded-pill bg-primary px-4 py-2 text-button-md text-on-primary hover:opacity-90">
+					{dict.custom.apply}
+				</button>
+			</div>
+		</div>
+	</div>
+</section>
+
+<style>
+	.rotate-mode [data-panel='b'] {
+		transform: rotate(180deg);
+	}
+</style>
+
+<script>
+	import '../scripts/chess-clock.ts';
+</script>

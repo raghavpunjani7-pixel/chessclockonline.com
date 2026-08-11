@@ -1,0 +1,61 @@
+---
+import { locales, localeNames, defaultLocale } from '../i18n/ui';
+import { localizedPath } from '../i18n/utils';
+
+interface Props {
+	currentPath: string;
+}
+
+const { currentPath } = Astro.props;
+const current = Astro.currentLocale ?? defaultLocale;
+---
+
+<div class="relative" data-lang-switcher>
+	<button
+		type="button"
+		data-lang-trigger
+		aria-haspopup="listbox"
+		aria-expanded="false"
+		class="flex h-9 shrink-0 items-center gap-1 rounded-full border border-hairline px-3 text-body-sm text-body transition-colors hover:text-ink"
+	>
+		<span aria-hidden="true">🌐</span>
+		<span class="uppercase">{current}</span>
+	</button>
+	<ul
+		data-lang-menu
+		role="listbox"
+		class="absolute right-0 top-full z-50 mt-1 hidden min-w-[140px] rounded-md border border-hairline bg-canvas p-1 modal-shadow"
+	>
+		{locales.map((locale) => (
+			<li>
+				<a
+					href={localizedPath(locale, currentPath)}
+					role="option"
+					aria-selected={locale === current}
+					class="block rounded-sm px-3 py-2 text-body-sm text-body hover:bg-canvas-soft-2 hover:text-ink aria-selected:bg-canvas-soft-2 aria-selected:text-ink"
+				>
+					{localeNames[locale]}
+				</a>
+			</li>
+		))}
+	</ul>
+</div>
+
+<script>
+	for (const wrapper of document.querySelectorAll<HTMLElement>("[data-lang-switcher]")) {
+		const trigger = wrapper.querySelector<HTMLButtonElement>("[data-lang-trigger]");
+		const menu = wrapper.querySelector<HTMLElement>("[data-lang-menu]");
+		trigger?.addEventListener("click", (event) => {
+			event.stopPropagation();
+			const isHidden = menu?.classList.contains("hidden");
+			menu?.classList.toggle("hidden", !isHidden);
+			trigger.setAttribute("aria-expanded", String(Boolean(isHidden)));
+		});
+		document.addEventListener("click", (event) => {
+			if (!wrapper.contains(event.target as Node)) {
+				menu?.classList.add("hidden");
+				trigger?.setAttribute("aria-expanded", "false");
+			}
+		});
+	}
+</script>

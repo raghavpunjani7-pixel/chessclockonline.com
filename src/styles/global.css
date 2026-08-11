@@ -1,0 +1,220 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@font-face {
+  font-family: "Geist";
+  src: url("/fonts/Geist-Variable.woff2") format("woff2-variations"), url("/fonts/Geist-Variable.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Geist Mono";
+  src: url("/fonts/GeistMono-Variable.woff2") format("woff2-variations"), url("/fonts/GeistMono-Variable.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@theme {
+  /* Colors — derived from DESIGN.md Vercel-inspired palette */
+  --color-primary: #171717;
+  --color-on-primary: #ffffff;
+  --color-ink: #171717;
+  --color-body: #4d4d4d;
+  --color-mute: #888888;
+  --color-hairline: #ebebeb;
+  --color-hairline-strong: #a1a1a1;
+  --color-canvas: #ffffff;
+  --color-canvas-soft: #fafafa;
+  --color-canvas-soft-2: #f5f5f5;
+  --color-link: #0070f3;
+  --color-link-deep: #0761d1;
+  --color-link-bg-soft: #d3e5ff;
+  --color-success: #0070f3;
+  --color-error: #ee0000;
+  --color-error-soft: #f7d4d6;
+  --color-error-deep: #c50000;
+  --color-warning: #f5a623;
+  --color-warning-soft: #ffefcf;
+  --color-warning-deep: #ab570a;
+  --color-violet: #7928ca;
+  --color-violet-soft: #d8ccf1;
+  --color-violet-deep: #4c2889;
+  --color-cyan: #50e3c2;
+  --color-cyan-soft: #aaffec;
+  --color-cyan-deep: #29bc9b;
+  --color-highlight-pink: #ff0080;
+  --color-highlight-magenta: #eb367f;
+  --color-gradient-develop-start: #007cf0;
+  --color-gradient-develop-end: #00dfd8;
+  --color-gradient-preview-start: #7928ca;
+  --color-gradient-preview-end: #ff0080;
+  --color-gradient-ship-start: #ff4d4d;
+  --color-gradient-ship-end: #f9cb28;
+  --color-selection-bg: #171717;
+  --color-selection-fg: #f2f2f2;
+
+  /* Fonts */
+  --font-sans: "Geist", "Inter", system-ui, -apple-system, sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, "SFMono-Regular", Menlo, Monaco, monospace;
+
+  /* Typography scale (font-size / line-height / weight / letter-spacing) */
+  --text-display-xl: 3rem;
+  --text-display-xl--line-height: 1;
+  --text-display-xl--font-weight: 600;
+  --text-display-xl--letter-spacing: -0.05em;
+
+  --text-display-lg: 2rem;
+  --text-display-lg--line-height: 1.25;
+  --text-display-lg--font-weight: 600;
+  --text-display-lg--letter-spacing: -0.04em;
+
+  --text-display-md: 1.5rem;
+  --text-display-md--line-height: 1.333;
+  --text-display-md--font-weight: 600;
+  --text-display-md--letter-spacing: -0.04em;
+
+  --text-display-sm: 1.25rem;
+  --text-display-sm--line-height: 1.4;
+  --text-display-sm--font-weight: 600;
+  --text-display-sm--letter-spacing: -0.03em;
+
+  --text-body-lg: 1.125rem;
+  --text-body-lg--line-height: 1.556;
+
+  --text-body-md: 1rem;
+  --text-body-md--line-height: 1.5;
+
+  --text-body-md-strong: 1rem;
+  --text-body-md-strong--line-height: 1.5;
+  --text-body-md-strong--font-weight: 500;
+
+  --text-body-sm: 0.875rem;
+  --text-body-sm--line-height: 1.428;
+  --text-body-sm--letter-spacing: -0.02em;
+
+  --text-body-sm-strong: 0.875rem;
+  --text-body-sm-strong--line-height: 1.428;
+  --text-body-sm-strong--font-weight: 500;
+  --text-body-sm-strong--letter-spacing: -0.02em;
+
+  --text-caption: 0.75rem;
+  --text-caption--line-height: 1.333;
+
+  --text-caption-mono: 0.75rem;
+  --text-caption-mono--line-height: 1.333;
+
+  --text-code: 0.8125rem;
+  --text-code--line-height: 1.538;
+
+  --text-button-md: 0.875rem;
+  --text-button-md--line-height: 1.428;
+  --text-button-md--font-weight: 500;
+
+  --text-button-lg: 1rem;
+  --text-button-lg--line-height: 1.5;
+  --text-button-lg--font-weight: 500;
+
+  /* Radius */
+  --radius-none: 0px;
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-pill-sm: 64px;
+  --radius-pill: 100px;
+}
+
+/* Dark theme — swaps the same semantic variables used by every utility class. */
+:root {
+  --shadow-card: 0px 1px 1px rgba(0, 0, 0, 0.02), 0px 2px 2px rgba(0, 0, 0, 0.04);
+  --shadow-modal: 0px 4px 8px rgba(0, 0, 0, 0.06), 0px 12px 32px rgba(0, 0, 0, 0.1);
+}
+
+.dark {
+  --color-primary: #ededed;
+  --color-on-primary: #0a0a0a;
+  --color-ink: #ededed;
+  --color-body: #a1a1a1;
+  --color-mute: #757575;
+  --color-hairline: #292929;
+  --color-hairline-strong: #4d4d4d;
+  --color-canvas: #0a0a0a;
+  --color-canvas-soft: #000000;
+  --color-canvas-soft-2: #151515;
+  --color-link: #3291ff;
+  --color-link-deep: #63b3ff;
+  --color-link-bg-soft: #0f2c4c;
+  --color-success: #3291ff;
+  --color-error: #ff5c5c;
+  --color-error-soft: #451717;
+  --color-error-deep: #ff8080;
+  --color-warning: #f7b955;
+  --color-warning-soft: #3d2a0d;
+  --color-warning-deep: #ffbe45;
+  --color-selection-bg: #ededed;
+  --color-selection-fg: #0a0a0a;
+  --shadow-card: 0px 1px 1px rgba(0, 0, 0, 0.3), 0px 2px 8px rgba(0, 0, 0, 0.5);
+  --shadow-modal: 0px 4px 16px rgba(0, 0, 0, 0.5), 0px 12px 40px rgba(0, 0, 0, 0.6);
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+    color-scheme: light;
+  }
+
+  html.dark {
+    color-scheme: dark;
+  }
+
+  body {
+    background-color: var(--color-canvas-soft);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    transition: background-color 150ms ease, color 150ms ease;
+  }
+
+  ::selection {
+    background-color: var(--color-selection-bg);
+    color: var(--color-selection-fg);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-link);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+}
+
+@layer utilities {
+  .card-shadow {
+    box-shadow: var(--shadow-card);
+  }
+
+  .modal-shadow {
+    box-shadow: var(--shadow-modal);
+  }
+
+  .bg-mesh-gradient {
+    background-image:
+      radial-gradient(circle at 15% 20%, color-mix(in srgb, var(--color-gradient-develop-start) 35%, transparent) 0%, transparent 45%),
+      radial-gradient(circle at 85% 15%, color-mix(in srgb, var(--color-gradient-preview-end) 30%, transparent) 0%, transparent 45%),
+      radial-gradient(circle at 50% 60%, color-mix(in srgb, var(--color-gradient-preview-start) 28%, transparent) 0%, transparent 55%),
+      radial-gradient(circle at 90% 80%, color-mix(in srgb, var(--color-gradient-ship-end) 30%, transparent) 0%, transparent 45%),
+      radial-gradient(circle at 10% 85%, color-mix(in srgb, var(--color-gradient-develop-end) 30%, transparent) 0%, transparent 45%);
+    filter: blur(60px);
+  }
+
+  .tabular-time {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum" 1;
+  }
+}
