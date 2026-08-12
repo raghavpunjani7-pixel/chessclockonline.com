@@ -20,12 +20,21 @@ const columns = [
 			{ href: localizedPath(lang, '/faq/'), label: dict.nav.faq },
 		],
 	},
+	{
+		title: dict.footer.legalHeading,
+		links: [
+			{ href: localizedPath(lang, '/about/'), label: dict.footer.aboutLink },
+			{ href: localizedPath(lang, '/privacy/'), label: dict.footer.privacyLink },
+			{ href: localizedPath(lang, '/terms/'), label: dict.footer.termsLink },
+			{ href: localizedPath(lang, '/contact/'), label: dict.footer.contactLink },
+		],
+	},
 ];
 ---
 
 <footer class="border-t border-hairline bg-canvas">
 	<div class="mx-auto max-w-6xl px-6 py-16">
-		<div class="grid gap-10 md:grid-cols-[1.5fr_1fr_1fr]">
+		<div class="grid gap-10 md:grid-cols-[1.5fr_1fr_1fr_1fr]">
 			<div>
 				<a href={localizedPath(lang, '/')} class="flex items-center gap-2 text-body-sm-strong text-ink">
 					<img src="/favicon-96x96.png" alt="" width="28" height="28" class="h-7 w-7 rounded-sm" />

@@ -1,0 +1,10 @@
+---
+import Layout from '../layouts/Layout.astro';
+import ErrorContent from '../components/ErrorContent.astro';
+---
+
+<Layout page="serverError">
+	<main>
+		<ErrorContent code="500" />
+	</main>
+</Layout>

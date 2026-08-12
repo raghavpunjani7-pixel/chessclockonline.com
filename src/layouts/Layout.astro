@@ -5,7 +5,7 @@ import SiteFooter from '../components/SiteFooter.astro';
 import { t, defaultLocale, locales, type Locale } from '../i18n/ui';
 
 interface Props {
-	page?: 'home' | 'clock' | 'timeControls' | 'features' | 'faq';
+	page?: 'home' | 'clock' | 'timeControls' | 'features' | 'faq' | 'about' | 'privacy' | 'terms' | 'contact' | 'notFound' | 'serverError';
 }
 
 const { page = 'home' } = Astro.props;
@@ -19,6 +19,12 @@ const titles: Record<NonNullable<Props['page']>, string> = {
 	timeControls: dict.timeControlsPage.metaTitle,
 	features: dict.featuresPage.metaTitle,
 	faq: dict.faqPage.metaTitle,
+	about: dict.aboutPage.metaTitle,
+	privacy: dict.privacyPage.metaTitle,
+	terms: dict.termsPage.metaTitle,
+	contact: dict.contactPage.metaTitle,
+	notFound: dict.errorPage.notFoundMetaTitle,
+	serverError: dict.errorPage.serverErrorMetaTitle,
 };
 const descriptions: Record<NonNullable<Props['page']>, string> = {
 	home: dict.meta.description,
@@ -26,9 +32,16 @@ const descriptions: Record<NonNullable<Props['page']>, string> = {
 	timeControls: dict.timeControlsPage.metaDescription,
 	features: dict.featuresPage.metaDescription,
 	faq: dict.faqPage.metaDescription,
+	about: dict.aboutPage.metaDescription,
+	privacy: dict.privacyPage.metaDescription,
+	terms: dict.termsPage.metaDescription,
+	contact: dict.contactPage.metaDescription,
+	notFound: dict.errorPage.notFoundMetaDescription,
+	serverError: dict.errorPage.serverErrorMetaDescription,
 };
 const title = titles[page];
 const description = descriptions[page];
+const noindex = page === 'notFound' || page === 'serverError';
 
 // Strip the locale prefix (if any) to get the canonical, locale-independent path.
 const pathname = Astro.url.pathname;
@@ -36,6 +49,18 @@ const prefix = lang !== defaultLocale ? `/${lang}` : '';
 const currentPath = prefix && pathname.startsWith(prefix) ? pathname.slice(prefix.length) || '/' : pathname;
 
 const canonicalURL = new URL(pathname, Astro.site);
+const ogImageURL = new URL('/web-app-manifest-512x512.png', Astro.site);
+
+const ogLocales: Record<Locale, string> = {
+	en: 'en_US',
+	es: 'es_ES',
+	fr: 'fr_FR',
+	de: 'de_DE',
+	pt: 'pt_PT',
+};
+const ogLocale = ogLocales[lang];
+
+const keywords = page === 'home' ? dict.meta.keywords : undefined;
 ---
 
 <!doctype html>
@@ -54,6 +79,8 @@ const canonicalURL = new URL(pathname, Astro.site);
 
 		<title>{title}</title>
 		<meta name="description" content={description} />
+		{noindex && <meta name="robots" content="noindex" />}
+		{keywords && <meta name="keywords" content={keywords} />}
 		<meta name="theme-color" content="#171717" />
 
 		{locales.map((locale) => (
@@ -62,12 +89,19 @@ const canonicalURL = new URL(pathname, Astro.site);
 		<link rel="alternate" hreflang="x-default" href={new URL(currentPath, Astro.site)} />
 
 		<meta property="og:type" content="website" />
+		<meta property="og:site_name" content="Chess Clock Online" />
+		<meta property="og:locale" content={ogLocale} />
 		<meta property="og:title" content={title} />
 		<meta property="og:description" content={description} />
 		<meta property="og:url" content={canonicalURL} />
+		<meta property="og:image" content={ogImageURL} />
+		<meta property="og:image:width" content="512" />
+		<meta property="og:image:height" content="512" />
+		<meta property="og:image:alt" content={title} />
 		<meta name="twitter:card" content="summary_large_image" />
 		<meta name="twitter:title" content={title} />
 		<meta name="twitter:description" content={description} />
+		<meta name="twitter:image" content={ogImageURL} />
 
 		<link rel="preload" href="/fonts/Geist-Variable.woff2" as="font" type="font/woff2" crossorigin />
 		<link rel="preload" href="/fonts/GeistMono-Variable.woff2" as="font" type="font/woff2" crossorigin />

@@ -1,0 +1,29 @@
+---
+import { t } from '../i18n/ui';
+import { localizedPath } from '../i18n/utils';
+
+interface Props {
+	code: '404' | '500';
+}
+
+const { code } = Astro.props;
+const lang = Astro.currentLocale;
+const dict = t(lang).errorPage;
+
+const title = code === '404' ? dict.notFoundTitle : dict.serverErrorTitle;
+const message = code === '404' ? dict.notFoundMessage : dict.serverErrorMessage;
+---
+
+<section class="bg-canvas py-24">
+	<div class="mx-auto max-w-xl px-6 text-center">
+		<p class="text-display-sm text-mute sm:text-display-md">{code}</p>
+		<h1 class="mt-2 text-display-sm text-ink sm:text-display-md">{title}</h1>
+		<p class="mt-4 text-body-md text-body">{message}</p>
+		<a
+			href={localizedPath(lang, '/')}
+			class="mt-8 inline-flex rounded-pill bg-primary px-4 py-2 text-button-lg text-on-primary transition-opacity hover:opacity-90"
+		>
+			{dict.backHome}
+		</a>
+	</div>
+</section>
