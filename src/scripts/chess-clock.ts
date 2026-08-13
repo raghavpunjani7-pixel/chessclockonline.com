@@ -390,6 +390,54 @@ class ClickSound {
 }
 
 // ---------------------------------------------------------------------------
+// Fullscreen (with a CSS-based fallback for browsers without the Fullscreen
+// API on arbitrary elements, e.g. iOS Safari/Chrome)
+// ---------------------------------------------------------------------------
+
+interface VendorFullscreenDoc extends Document {
+  webkitFullscreenElement?: Element;
+  webkitExitFullscreen?: () => Promise<void>;
+  mozFullScreenElement?: Element;
+  mozCancelFullScreen?: () => Promise<void>;
+  msFullscreenElement?: Element;
+  msExitFullscreen?: () => Promise<void>;
+}
+
+interface VendorFullscreenEl extends HTMLElement {
+  webkitRequestFullscreen?: () => Promise<void>;
+  webkitRequestFullScreen?: () => Promise<void>;
+  mozRequestFullScreen?: () => Promise<void>;
+  msRequestFullscreen?: () => Promise<void>;
+}
+
+function nativeFullscreenElement(): Element | null {
+  const doc = document as VendorFullscreenDoc;
+  return doc.fullscreenElement ?? doc.webkitFullscreenElement ?? doc.mozFullScreenElement ?? doc.msFullscreenElement ?? null;
+}
+
+function requestNativeFullscreen(el: HTMLElement): Promise<void> | null {
+  const target = el as VendorFullscreenEl;
+  const fn = target.requestFullscreen ?? target.webkitRequestFullscreen ?? target.webkitRequestFullScreen ?? target.mozRequestFullScreen ?? target.msRequestFullscreen;
+  if (typeof fn !== "function") return null;
+  try {
+    return fn.call(target) ?? Promise.resolve();
+  } catch {
+    return null;
+  }
+}
+
+function exitNativeFullscreen(): Promise<void> | null {
+  const doc = document as VendorFullscreenDoc;
+  const fn = doc.exitFullscreen ?? doc.webkitExitFullscreen ?? doc.mozCancelFullScreen ?? doc.msExitFullscreen;
+  if (typeof fn !== "function") return null;
+  try {
+    return fn.call(doc) ?? Promise.resolve();
+  } catch {
+    return null;
+  }
+}
+
+// ---------------------------------------------------------------------------
 // DOM wiring
 // ---------------------------------------------------------------------------
 
@@ -580,6 +628,15 @@ function initChessClock(): void {
     startPauseBtn.textContent = !engine.hasStarted ? i18n.start : engine.isRunning ? i18n.pause : i18n.resume;
     undoBtn.disabled = false;
     resetBtn.disabled = false;
+
+    // Once the game has started, lock the name tags so an accidental tap
+    // focuses/edits the text box instead of pressing the clock.
+    nameInputA.readOnly = engine.hasStarted;
+    nameInputB.readOnly = engine.hasStarted;
+    nameInputA.tabIndex = engine.hasStarted ? -1 : 0;
+    nameInputB.tabIndex = engine.hasStarted ? -1 : 0;
+    nameInputA.style.pointerEvents = engine.hasStarted ? "none" : "";
+    nameInputB.style.pointerEvents = engine.hasStarted ? "none" : "";
   }
 
   engine.onUpdate = render;
@@ -713,11 +770,28 @@ function initChessClock(): void {
     persist();
   });
 
+  function enterPseudoFullscreen(): void {
+    root.classList.add("pseudo-fullscreen");
+    document.documentElement.classList.add("clock-pseudo-fullscreen-lock");
+  }
+
+  function exitPseudoFullscreen(): void {
+    root.classList.remove("pseudo-fullscreen");
+    document.documentElement.classList.remove("clock-pseudo-fullscreen-lock");
+  }
+
   fullscreenBtn.addEventListener("click", () => {
-    if (!document.fullscreenElement) {
-      root.requestFullscreen?.().catch(() => undefined);
+    const isFullscreen = nativeFullscreenElement() === root || root.classList.contains("pseudo-fullscreen");
+    if (isFullscreen) {
+      exitPseudoFullscreen();
+      exitNativeFullscreen()?.catch(() => undefined);
+      return;
+    }
+    const request = requestNativeFullscreen(root);
+    if (request) {
+      request.catch(() => enterPseudoFullscreen());
     } else {
-      document.exitFullscreen?.().catch(() => undefined);
+      enterPseudoFullscreen();
     }
   });
 

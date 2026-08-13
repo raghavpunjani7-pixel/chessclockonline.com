@@ -191,8 +191,11 @@ const clockI18n = {
 		transform: rotate(180deg);
 	}
 
-	/* Fullscreen: two edge-to-edge tap zones, like a real chess clock */
-	[data-chess-clock]:fullscreen {
+	/* Fullscreen: two edge-to-edge tap zones, like a real chess clock.
+	   .pseudo-fullscreen is a manual fallback for browsers (iOS Safari/Chrome)
+	   that don't support the Fullscreen API on arbitrary elements. */
+	[data-chess-clock]:fullscreen,
+	[data-chess-clock].pseudo-fullscreen {
 		position: relative;
 		display: flex;
 		flex-direction: column;
@@ -206,15 +209,32 @@ const clockI18n = {
 		background: var(--color-canvas);
 	}
 
+	[data-chess-clock].pseudo-fullscreen {
+		position: fixed;
+		inset: 0;
+		z-index: 9999;
+	}
+
+	:global(html.clock-pseudo-fullscreen-lock),
+	:global(html.clock-pseudo-fullscreen-lock body) {
+		overflow: hidden;
+	}
+
 	[data-chess-clock]:fullscreen [data-now-playing],
 	[data-chess-clock]:fullscreen [data-sound-toggle],
 	[data-chess-clock]:fullscreen [data-tap-hint],
 	[data-chess-clock]:fullscreen [data-clock-presets],
-	[data-chess-clock]:fullscreen [data-name] {
+	[data-chess-clock]:fullscreen [data-name],
+	[data-chess-clock].pseudo-fullscreen [data-now-playing],
+	[data-chess-clock].pseudo-fullscreen [data-sound-toggle],
+	[data-chess-clock].pseudo-fullscreen [data-tap-hint],
+	[data-chess-clock].pseudo-fullscreen [data-clock-presets],
+	[data-chess-clock].pseudo-fullscreen [data-name] {
 		display: none !important;
 	}
 
-	[data-chess-clock]:fullscreen [data-clock-topbar] {
+	[data-chess-clock]:fullscreen [data-clock-topbar],
+	[data-chess-clock].pseudo-fullscreen [data-clock-topbar] {
 		position: absolute;
 		inset: 0 0 auto 0;
 		z-index: 20;
@@ -223,19 +243,23 @@ const clockI18n = {
 	}
 
 	[data-chess-clock]:fullscreen [data-fullscreen],
-	[data-chess-clock]:fullscreen [data-rotate] {
+	[data-chess-clock]:fullscreen [data-rotate],
+	[data-chess-clock].pseudo-fullscreen [data-fullscreen],
+	[data-chess-clock].pseudo-fullscreen [data-rotate] {
 		border-radius: 9999px;
 		background: color-mix(in srgb, var(--color-canvas) 80%, transparent);
 		box-shadow: var(--shadow-card);
 	}
 
-	[data-chess-clock]:fullscreen [data-clock-shell] {
+	[data-chess-clock]:fullscreen [data-clock-shell],
+	[data-chess-clock].pseudo-fullscreen [data-clock-shell] {
 		flex: 1;
 		margin-top: 0 !important;
 		gap: 0.125rem !important;
 	}
 
-	[data-chess-clock]:fullscreen [data-panel] {
+	[data-chess-clock]:fullscreen [data-panel],
+	[data-chess-clock].pseudo-fullscreen [data-panel] {
 		flex: 1;
 		min-height: 0 !important;
 		border: 0 !important;
@@ -243,15 +267,18 @@ const clockI18n = {
 		box-shadow: none !important;
 	}
 
-	[data-chess-clock]:fullscreen [data-time] {
+	[data-chess-clock]:fullscreen [data-time],
+	[data-chess-clock].pseudo-fullscreen [data-time] {
 		font-size: clamp(4rem, 20vw, 10rem) !important;
 	}
 
-	[data-chess-clock]:fullscreen [data-moves] {
+	[data-chess-clock]:fullscreen [data-moves],
+	[data-chess-clock].pseudo-fullscreen [data-moves] {
 		font-size: 0.875rem;
 	}
 
-	[data-chess-clock]:fullscreen [data-clock-controls] {
+	[data-chess-clock]:fullscreen [data-clock-controls],
+	[data-chess-clock].pseudo-fullscreen [data-clock-controls] {
 		position: absolute;
 		top: 50%;
 		left: 50%;
