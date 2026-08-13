@@ -254,13 +254,6 @@ class ChessClockEngine {
     this.onUpdate?.();
   }
 
-  swapSides(): void {
-    if (this.hasStarted) return;
-    const a = this.a;
-    this.a = this.b;
-    this.b = a;
-  }
-
   undo(): boolean {
     if (!this.history) return false;
     this.a = this.history.a;
@@ -450,15 +443,13 @@ interface StoredPrefs {
   customStageMoves: number;
   customStageMinutes: number;
   soundOn: boolean;
-  nameA: string;
-  nameB: string;
   rotateMode: boolean;
 }
 
 const STORAGE_KEY = "chessclockonline:prefs";
 const DEFAULT_PRESET_ID = "blitz-5+3";
 
-function loadPrefs(i18n: ClockI18n): StoredPrefs {
+function loadPrefs(): StoredPrefs {
   const defaults: StoredPrefs = {
     presetId: DEFAULT_PRESET_ID,
     customMinutes: 15,
@@ -468,8 +459,6 @@ function loadPrefs(i18n: ClockI18n): StoredPrefs {
     customStageMoves: 40,
     customStageMinutes: 30,
     soundOn: true,
-    nameA: i18n.player1,
-    nameB: i18n.player2,
     rotateMode: false,
   };
   try {
@@ -508,7 +497,7 @@ function initChessClock(): void {
 
   const i18n = loadClockI18n(root);
   const presets = buildPresets(i18n);
-  const prefs = loadPrefs(i18n);
+  const prefs = loadPrefs();
 
   const panelA = root.querySelector<HTMLElement>('[data-panel="a"]')!;
   const panelB = root.querySelector<HTMLElement>('[data-panel="b"]')!;
@@ -516,8 +505,8 @@ function initChessClock(): void {
   const timeB = root.querySelector<HTMLElement>('[data-time="b"]')!;
   const movesA = root.querySelector<HTMLElement>('[data-moves="a"]')!;
   const movesB = root.querySelector<HTMLElement>('[data-moves="b"]')!;
-  const nameInputA = root.querySelector<HTMLInputElement>('[data-name="a"]')!;
-  const nameInputB = root.querySelector<HTMLInputElement>('[data-name="b"]')!;
+  const nameLabelA = root.querySelector<HTMLElement>('[data-name="a"]')!;
+  const nameLabelB = root.querySelector<HTMLElement>('[data-name="b"]')!;
   const startPauseBtn = root.querySelector<HTMLButtonElement>("[data-start-pause]")!;
   const resetBtn = root.querySelector<HTMLButtonElement>("[data-reset]")!;
   const undoBtn = root.querySelector<HTMLButtonElement>("[data-undo]")!;
@@ -562,9 +551,23 @@ function initChessClock(): void {
   const sound = new ClickSound();
   let soundOn = prefs.soundOn;
   let rotateMode = prefs.rotateMode;
+  // Whether side "a" (the bottom panel) currently holds White. White always
+  // moves first, so the engine's active side must track this instead of
+  // being hardcoded to "a" — otherwise swapping sides before the game starts
+  // leaves the clock starting on whichever side is now labeled Black.
+  let whiteOnA = true;
+  const ariaTemplateA = panelA.getAttribute("aria-label") ?? "";
+  const ariaTemplateB = panelB.getAttribute("aria-label") ?? "";
 
-  nameInputA.value = prefs.nameA;
-  nameInputB.value = prefs.nameB;
+  function whiteSide(): Side {
+    return whiteOnA ? "a" : "b";
+  }
+
+  function labelFor(side: Side): string {
+    const isWhite = side === "a" ? whiteOnA : !whiteOnA;
+    return isWhite ? i18n.player1 : i18n.player2;
+  }
+
   customMinutesInput.value = String(prefs.customMinutes);
   customIncrementInput.value = String(prefs.customIncrement);
   customIncrementType.value = prefs.customIncrementType;
@@ -587,8 +590,6 @@ function initChessClock(): void {
       customStageMoves: Number(customStageMoves.value) || 40,
       customStageMinutes: Number(customStageMinutes.value) || 30,
       soundOn,
-      nameA: nameInputA.value || i18n.player1,
-      nameB: nameInputB.value || i18n.player2,
       rotateMode,
     });
   }
@@ -611,6 +612,10 @@ function initChessClock(): void {
     timeB.textContent = formatTime(engine.b.remainingMs, showTenthsB);
     movesA.textContent = `${engine.a.moves} ${engine.a.moves === 1 ? i18n.moveSingular : i18n.movePlural}`;
     movesB.textContent = `${engine.b.moves} ${engine.b.moves === 1 ? i18n.moveSingular : i18n.movePlural}`;
+    nameLabelA.textContent = labelFor("a");
+    nameLabelB.textContent = labelFor("b");
+    panelA.setAttribute("aria-label", whiteOnA ? ariaTemplateA : ariaTemplateA.replace(i18n.player1, i18n.player2));
+    panelB.setAttribute("aria-label", whiteOnA ? ariaTemplateB : ariaTemplateB.replace(i18n.player2, i18n.player1));
 
     for (const [side, panel, state] of [
       ["a", panelA, engine.a],
@@ -628,22 +633,12 @@ function initChessClock(): void {
     startPauseBtn.textContent = !engine.hasStarted ? i18n.start : engine.isRunning ? i18n.pause : i18n.resume;
     undoBtn.disabled = false;
     resetBtn.disabled = false;
-
-    // Once the game has started, lock the name tags so an accidental tap
-    // focuses/edits the text box instead of pressing the clock.
-    nameInputA.readOnly = engine.hasStarted;
-    nameInputB.readOnly = engine.hasStarted;
-    nameInputA.tabIndex = engine.hasStarted ? -1 : 0;
-    nameInputB.tabIndex = engine.hasStarted ? -1 : 0;
-    nameInputA.style.pointerEvents = engine.hasStarted ? "none" : "";
-    nameInputB.style.pointerEvents = engine.hasStarted ? "none" : "";
   }
 
   engine.onUpdate = render;
   engine.onTurnEnd = (mover) => {
     if (soundOn) sound.press();
-    const moverName = (mover === "a" ? nameInputA.value : nameInputB.value) || (mover === "a" ? i18n.player1 : i18n.player2);
-    announce(format(i18n.announce.moved, { name: moverName }));
+    announce(format(i18n.announce.moved, { name: labelFor(mover) }));
   };
   engine.onLowTime = (side, level) => {
     if (!soundOn) return;
@@ -652,17 +647,16 @@ function initChessClock(): void {
     if (navigator.vibrate) navigator.vibrate(level === "critical" ? [80, 40, 80] : 60);
   };
   engine.onTimeout = (loser) => {
-    const loserName = loser === "a" ? nameInputA.value || i18n.player1 : nameInputB.value || i18n.player2;
-    const winnerName = loser === "a" ? nameInputB.value || i18n.player2 : nameInputA.value || i18n.player1;
+    const winner: Side = loser === "a" ? "b" : "a";
     if (soundOn) sound.timeout();
-    announce(format(i18n.announce.timeout, { loser: loserName, winner: winnerName }));
+    announce(format(i18n.announce.timeout, { loser: labelFor(loser), winner: labelFor(winner) }));
   };
 
   function selectPreset(id: string): void {
     const preset = presets.find((p) => p.id === id);
     if (!preset) return;
     currentConfig = preset;
-    engine.reset(currentConfig, "a");
+    engine.reset(currentConfig, whiteSide());
     updatePresetChips();
     persist();
     announce(format(i18n.announce.presetSet, { label: preset.label }));
@@ -679,7 +673,7 @@ function initChessClock(): void {
       customStageMinutes: Math.max(1, Number(customStageMinutes.value) || 30),
     };
     currentConfig = buildCustomConfig(draftPrefs, i18n);
-    engine.reset(currentConfig, "a");
+    engine.reset(currentConfig, whiteSide());
     updatePresetChips();
     persist();
     announce(i18n.announce.customApplied);
@@ -706,28 +700,16 @@ function initChessClock(): void {
   applyCustomBtn.addEventListener("click", applyCustom);
 
   // Panel presses
-  panelA.addEventListener("click", (event) => {
-    if ((event.target as HTMLElement).closest("input")) return;
-    engine.press("a");
-  });
-  panelB.addEventListener("click", (event) => {
-    if ((event.target as HTMLElement).closest("input")) return;
-    engine.press("b");
-  });
+  panelA.addEventListener("click", () => engine.press("a"));
+  panelB.addEventListener("click", () => engine.press("b"));
   for (const panel of [panelA, panelB]) {
     panel.addEventListener("keydown", (event) => {
       if (event.key === "Enter" || event.key === " ") {
-        if ((event.target as HTMLElement).closest("input")) return;
         event.preventDefault();
         engine.press(panel === panelA ? "a" : "b");
       }
     });
   }
-
-  nameInputA.addEventListener("input", persist);
-  nameInputB.addEventListener("input", persist);
-  nameInputA.addEventListener("click", (e) => e.stopPropagation());
-  nameInputB.addEventListener("click", (e) => e.stopPropagation());
 
   startPauseBtn.addEventListener("click", () => {
     if (!engine.hasStarted) engine.start();
@@ -737,7 +719,7 @@ function initChessClock(): void {
 
   resetBtn.addEventListener("click", () => {
     if (engine.hasStarted && !window.confirm(i18n.resetConfirm)) return;
-    engine.reset(currentConfig, "a");
+    engine.reset(currentConfig, whiteSide());
     announce(i18n.announce.reset);
   });
 
@@ -747,11 +729,8 @@ function initChessClock(): void {
 
   swapBtn.addEventListener("click", () => {
     if (engine.hasStarted) return;
-    engine.swapSides();
-    const tmp = nameInputA.value;
-    nameInputA.value = nameInputB.value;
-    nameInputB.value = tmp;
-    persist();
+    whiteOnA = !whiteOnA;
+    engine.active = whiteSide();
     render();
     announce(i18n.announce.swapped);
   });

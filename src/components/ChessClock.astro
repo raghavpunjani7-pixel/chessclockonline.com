@@ -63,14 +63,7 @@ const clockI18n = {
 				aria-label={`${dict.player2} — ${dict.tapHint}`}
 				class="group relative flex min-h-[200px] flex-1 cursor-pointer select-none flex-col items-center justify-center gap-1 rounded-lg border border-hairline bg-canvas p-6 text-ink transition-colors duration-150 card-shadow data-[active=true]:border-transparent data-[active=true]:bg-primary data-[active=true]:text-on-primary data-[active=true]:data-[low=true]:bg-warning-deep data-[active=true]:data-[critical=true]:bg-error data-[expired=true]:bg-error data-[expired=true]:text-on-primary sm:min-h-[240px]"
 			>
-				<input
-					data-name="b"
-					type="text"
-					maxlength="20"
-					aria-label={dict.player2}
-					class="w-40 rounded-full bg-transparent text-center text-body-sm-strong outline-none placeholder:text-current"
-					placeholder={dict.player2}
-				/>
+				<span data-name="b" class="text-body-md-strong sm:text-body-lg-strong">{dict.player2}</span>
 				<span data-time="b" class="tabular-time text-[3.25rem] leading-none sm:text-[4.5rem]">5:00</span>
 				<span data-moves="b" class="text-caption opacity-80">0 {dict.movePlural}</span>
 			</div>
@@ -102,14 +95,7 @@ const clockI18n = {
 				aria-label={`${dict.player1} — ${dict.tapHint}`}
 				class="group relative flex min-h-[200px] flex-1 cursor-pointer select-none flex-col items-center justify-center gap-1 rounded-lg border border-hairline bg-canvas p-6 text-ink transition-colors duration-150 card-shadow data-[active=true]:border-transparent data-[active=true]:bg-primary data-[active=true]:text-on-primary data-[active=true]:data-[low=true]:bg-warning-deep data-[active=true]:data-[critical=true]:bg-error data-[expired=true]:bg-error data-[expired=true]:text-on-primary sm:min-h-[240px]"
 			>
-				<input
-					data-name="a"
-					type="text"
-					maxlength="20"
-					aria-label={dict.player1}
-					class="w-40 rounded-full bg-transparent text-center text-body-sm-strong outline-none placeholder:text-current"
-					placeholder={dict.player1}
-				/>
+				<span data-name="a" class="text-body-md-strong sm:text-body-lg-strong">{dict.player1}</span>
 				<span data-time="a" class="tabular-time text-[3.25rem] leading-none sm:text-[4.5rem]">5:00</span>
 				<span data-moves="a" class="text-caption opacity-80">0 {dict.movePlural}</span>
 			</div>
