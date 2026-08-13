@@ -101,6 +101,14 @@ const MINUTE = 60_000;
 const SECOND = 1000;
 const LOW_TIME_MS = 30 * SECOND;
 const CRITICAL_TIME_MS = 10 * SECOND;
+const MAX_CUSTOM_MINUTES = 599; // 9h59m59s, matching digital clocks like the DGT 3000
+const MAX_CUSTOM_INCREMENT_SECONDS = 60;
+const MAX_CUSTOM_STAGE_MOVES = 80;
+const MAX_CUSTOM_STAGE_MINUTES = 599;
+
+function clamp(value: number, min: number, max: number): number {
+  return Math.min(max, Math.max(min, value));
+}
 const TENTHS_THRESHOLD_MS = 20 * SECOND;
 
 interface PresetDefinition {
@@ -583,12 +591,12 @@ function initChessClock(): void {
   function persist(): void {
     savePrefs({
       presetId: currentConfig.id,
-      customMinutes: Number(customMinutesInput.value) || 15,
-      customIncrement: Number(customIncrementInput.value) || 0,
+      customMinutes: clamp(Number(customMinutesInput.value) || 15, 1, MAX_CUSTOM_MINUTES),
+      customIncrement: clamp(Number(customIncrementInput.value) || 0, 0, MAX_CUSTOM_INCREMENT_SECONDS),
       customIncrementType: customIncrementType.value as IncrementType,
       customStageEnabled: customStageToggle.checked,
-      customStageMoves: Number(customStageMoves.value) || 40,
-      customStageMinutes: Number(customStageMinutes.value) || 30,
+      customStageMoves: clamp(Number(customStageMoves.value) || 40, 1, MAX_CUSTOM_STAGE_MOVES),
+      customStageMinutes: clamp(Number(customStageMinutes.value) || 30, 1, MAX_CUSTOM_STAGE_MINUTES),
       soundOn,
       rotateMode,
     });
@@ -665,13 +673,17 @@ function initChessClock(): void {
   function applyCustom(): void {
     const draftPrefs: StoredPrefs = {
       ...prefs,
-      customMinutes: Math.max(1, Number(customMinutesInput.value) || 15),
-      customIncrement: Math.max(0, Number(customIncrementInput.value) || 0),
+      customMinutes: clamp(Number(customMinutesInput.value) || 15, 1, MAX_CUSTOM_MINUTES),
+      customIncrement: clamp(Number(customIncrementInput.value) || 0, 0, MAX_CUSTOM_INCREMENT_SECONDS),
       customIncrementType: customIncrementType.value as IncrementType,
       customStageEnabled: customStageToggle.checked,
-      customStageMoves: Math.max(1, Number(customStageMoves.value) || 40),
-      customStageMinutes: Math.max(1, Number(customStageMinutes.value) || 30),
+      customStageMoves: clamp(Number(customStageMoves.value) || 40, 1, MAX_CUSTOM_STAGE_MOVES),
+      customStageMinutes: clamp(Number(customStageMinutes.value) || 30, 1, MAX_CUSTOM_STAGE_MINUTES),
     };
+    customMinutesInput.value = String(draftPrefs.customMinutes);
+    customIncrementInput.value = String(draftPrefs.customIncrement);
+    customStageMoves.value = String(draftPrefs.customStageMoves);
+    customStageMinutes.value = String(draftPrefs.customStageMinutes);
     currentConfig = buildCustomConfig(draftPrefs, i18n);
     engine.reset(currentConfig, whiteSide());
     updatePresetChips();
