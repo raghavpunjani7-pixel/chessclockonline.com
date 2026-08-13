@@ -210,13 +210,16 @@ const clockI18n = {
 	[data-chess-clock]:fullscreen [data-sound-toggle],
 	[data-chess-clock]:fullscreen [data-tap-hint],
 	[data-chess-clock]:fullscreen [data-clock-presets],
-	[data-chess-clock]:fullscreen [data-name],
 	[data-chess-clock].pseudo-fullscreen [data-now-playing],
 	[data-chess-clock].pseudo-fullscreen [data-sound-toggle],
 	[data-chess-clock].pseudo-fullscreen [data-tap-hint],
-	[data-chess-clock].pseudo-fullscreen [data-clock-presets],
-	[data-chess-clock].pseudo-fullscreen [data-name] {
+	[data-chess-clock].pseudo-fullscreen [data-clock-presets] {
 		display: none !important;
+	}
+
+	[data-chess-clock]:fullscreen [data-name],
+	[data-chess-clock].pseudo-fullscreen [data-name] {
+		font-size: clamp(1.25rem, 4vw, 2rem) !important;
 	}
 
 	[data-chess-clock]:fullscreen [data-clock-topbar],
